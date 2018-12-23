@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <windows.h>
 #include <stdlib.h>
-#include <conio.h>
 #include <time.h>
 
 #define size_y 7
@@ -12,10 +11,11 @@
 enum { BLK, WAL, HUM, OBS };
 
 //전역 변수***************************************************************************
-int map[size_y][size_x];
+int map[size_y][100];
 char custom[100];
 int x, y;
 int len;
+int fall=1;
 
 //함수 선언***************************************************************************
 void line();
@@ -24,7 +24,7 @@ void menu1();
 void mapbase();              //맵에 값 저장
 void mapping();              //맵 출력
 void Jump();                 //점프
-void Gravity();              //점프 하거나 말거나, 주기적으로 플레이어를 밑으로 내려가게 하는 함수(이름은 재밌게 중력으로 함 ㅎ)
+void Down();   //점프 하거나 말거나, 주기적으로 플레이어를 밑으로 내려가게 하는 함수(이름은 재밌게 중력으로 함 ㅎ)
 void Obstacle();             //장애물
 void MapMove();              //맵을 왼쪽으로 한 칸씩 밈
 int Gameover();             //게임 오버 화면
@@ -49,9 +49,10 @@ int main()
    {
       if (way == 1 || way == 2 || way == 3)
          menu();
-      printf("메뉴를 선택하세요: ");
 
+      printf("메뉴를 선택하세요: ");
       scanf("%d", &way);
+
       if (way == 1)
       {
          menu1();
@@ -74,7 +75,6 @@ int main()
             }
          }
       }
-
       else if (way == 2)
       {
          if (custom[0] == '4')
@@ -98,11 +98,25 @@ int main()
             {
                if (_kbhit())
                {
-                  if (getch() == KB_UP) Jump();
+                  if (map[5][x] == HUM)
+                  {
+                     if (getch() == KB_UP) fall = 0;
+                  }
+               }
+               if (map[0][x] == HUM) fall = 1;
+               if (fall == 0)
+               {
+                  if (t % 40 == 0) Jump();
+               }
+               else
+               {
+                  if(t%40==0) Down();
                }
                if (t % 10 == 0) MapMove();
-               if (t % 40 == 0) Gravity();
-               if (t % 500 == 0) Obstacle();
+               if (t % 40 == 0)
+               {
+                  Obstacle();
+               }
                print_xy(0, 0);
                mapping();
                turn = Gameover();
@@ -124,12 +138,12 @@ int main()
    }
    return 0;
 }
-
+//줄 표현
 void line()
 {
    printf("==========================\n");
 }
-
+//메뉴출력
 void menu()
 {
    line();
@@ -139,7 +153,7 @@ void menu()
    printf("3: 종료\n");
    line();
 }
-
+//맵만들기 메뉴 출력
 void menu1()
 {
    line();
@@ -147,7 +161,7 @@ void menu1()
    printf("(0: 바닥, 1~3: 장애물의 높이)\n");
    line();
 }
-//배열에 값을 입력********************************************************************
+//배열에 값을 입력
 void mapbase()
 {
    for (int i = 0;i<size_y;i++)
@@ -162,7 +176,7 @@ void mapbase()
    x = 4;
    y = size_y - 2;
 }
-//맵을 화면에 출력********************************************************************
+//맵을 화면에 출력
 void mapping()
 {
    for (int i = 0; i<size_y; i++)
@@ -177,24 +191,21 @@ void mapping()
       printf("\n");
    }
 }
-//점프********************************************************************************
+//점프
 void Jump()
 {
    int c;
-
    if (map[y - 1][x] == BLK)
-   {
+      {
       c = map[y][x];
       map[y][x] = map[y - 1][x];
       map[y - 1][x] = c;
       y--;
    }
 }
-//중력********************************************************************************
-void Gravity()
+void Down()
 {
    int c;
-
    if (map[y + 1][x] == BLK)
    {
       c = map[y][x];
@@ -203,7 +214,7 @@ void Gravity()
       y++;
    }
 }
-//장애물*******************************************************************************
+//장애물
 void Obstacle()
 {
    int i = 0;
@@ -229,7 +240,7 @@ void Obstacle()
    }
    i++;
 }
-//맵을 한 칸씩 밀어보리기*************************************************************
+//맵을 한 칸씩 밀어보리기
 void MapMove()
 {
    int c;
@@ -253,20 +264,20 @@ void MapMove()
       }
    }
 }
-//엔딩 화면*****************************************************************************
+//엔딩 여부 확인
 int Gameover()
 {
-   int eturn = 1;
-   if (map[y][x] != HUM) eturn = 0;
-   return eturn;
+   int gameturning= 1;
+   if (map[y][x] != HUM) gameturning = 0;
+   return gameturning;
 }
-//************************************************************************************
+//그놈의 print_xy
 void print_xy(int x, int y)
 {
    COORD Pos = { 2 * x,y };
    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 }
-//커서 안 보이게 해줌*****************************************************************
+//커서 없애기용
 void CursorView(int show)
 {
    HANDLE hConsole;
@@ -276,4 +287,3 @@ void CursorView(int show)
    ConsoleCursor.dwSize = 1;
    SetConsoleCursorInfo(hConsole, &ConsoleCursor);
 }
-//************************************************************************************
