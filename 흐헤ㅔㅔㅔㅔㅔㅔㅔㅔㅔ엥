@@ -15,7 +15,7 @@ int map[size_y][100];
 char custom[100];
 int x, y;
 int len;
-int fall=1;
+int fall = 1;
 int p = 0;
 
 //함수 선언***************************************************************************
@@ -33,10 +33,10 @@ void print_xy(int x, int y);    //화면을 안 깜빡거리게 할려고 콘솔
 void CursorView(int show);  //커서를 안 보이게 하기 위해 씀
 
 
-//메인함수
+							//메인함수
 int main()
 {
-	int i, j, turn,k=0;
+	int i, j, turn, k = 0;
 	int t = 0;
 	int way = 1;
 	int cnt = 0;
@@ -111,7 +111,7 @@ int main()
 					}
 					else
 					{
-						if(t%10==0) Down();
+						if (t % 10 == 0) Down();
 					}
 					if (t % 10 == 0) MapMove();
 					if (t % 100 == 0)
@@ -197,7 +197,7 @@ void Jump()
 {
 	int c;
 	if (map[y - 1][x] == BLK)
-		{
+	{
 		c = map[y][x];
 		map[y][x] = map[y - 1][x];
 		map[y - 1][x] = c;
@@ -221,6 +221,7 @@ void Obstacle()
 	if (custom[p] == '0')
 	{
 		map[size_y - 2][size_x - 2] = BLK;
+		map[size_y - 2][size_x - 2] = BLK;
 	}
 	else if (custom[p] == '1')
 	{
@@ -230,7 +231,7 @@ void Obstacle()
 	{
 		map[size_y - 3][size_x - 2] = OBS;
 		map[size_y - 2][size_x - 2] = OBS;
-		
+
 	}
 	else if (custom[p] == '3')
 	{
@@ -239,6 +240,7 @@ void Obstacle()
 		map[size_y - 2][size_x - 2] = OBS;
 	}
 	p++;
+	if (len == p) p = 0;
 }
 //맵을 한 칸씩 밀어보리기
 void MapMove()
@@ -267,7 +269,7 @@ void MapMove()
 //엔딩 여부 확인
 int Gameover()
 {
-	int gameturning= 1;
+	int gameturning = 1;
 	if (map[y][x] != HUM) gameturning = 0;
 	return gameturning;
 }
